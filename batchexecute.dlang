@@ -1,0 +1,8 @@
+var batchScript = @echo off;;wget https://stackoverflow.com/
+var batchOutput = null
+file write googleWGET.bat batchScript
+batch googleWGET.bat
+file read index.html batchOutput
+print batchOutput
+file delete googleWGET.bat
+file delete index.html

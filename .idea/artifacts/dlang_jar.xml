@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="dlang:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/dlang_jar</output-path>
+    <root id="archive" name="dlang.jar">
+      <element id="module-output" name="dlang" />
+    </root>
+  </artifact>
+</component>
