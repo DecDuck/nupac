@@ -1,0 +1,5 @@
+var name = ;
+file read name.txt name
+var output = ;
+string append output Hello, [] name
+system popup output output

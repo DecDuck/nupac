@@ -1,3 +1,5 @@
+import editor.EditorMain;
+
 import javax.swing.*;
 import java.awt.*;
 import java.io.*;
@@ -17,21 +19,12 @@ public class Master {
         for(int i = 1; i < args.length; i++) {
             commandArgs.add(args[i]);
         }
-        if(args.length == 0){
-            String line = "";
-            Scanner scanner = new Scanner(System.in);
-            int i = 0;
-            while(!line.equals("exit")){
-                System.out.print(">");
-                line = scanner.nextLine();
-                try {
-                    RunLine(line, i);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                i++;
+        if(args[0].equals("editor")){
+            try {
+                EditorMain.Editor(args[1]);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
             }
-
         }else{
             File f = new File(args[0]);
             FileInputStream in = null;
@@ -158,7 +151,7 @@ public class Master {
                 String varToWrite = split[2];
                 String temp = "";
                 for(int i = 3; i < split.length; i++){
-                    temp = temp + Util.GetVar(split[i]);
+                    temp = temp + Util.GetVar(split[i]).replace("[]", " ");
                 }
                 Util.CreateVar(varToWrite, temp, true);
             }
