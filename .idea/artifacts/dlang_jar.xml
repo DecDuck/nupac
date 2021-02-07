@@ -4,6 +4,7 @@
     <root id="archive" name="dlang.jar">
       <element id="module-output" name="dlang" />
       <element id="extracted-dir" path="$PROJECT_DIR$/src/lib/flatlaf-0.46.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/src/lib/jsoup-1.13.1.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>

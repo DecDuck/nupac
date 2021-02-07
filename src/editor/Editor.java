@@ -6,6 +6,11 @@ public class Editor {
     private JPanel editorPanel;
     private JToolBar editorToolbar;
     private JTextPane editorText;
+    private JTextArea editorOutput;
+
+    public JTextArea getEditorOutput() {
+        return editorOutput;
+    }
 
     public JPanel getEditorPanel() {
         return editorPanel;

@@ -1,31 +1,51 @@
 package editor;
 
-import com.formdev.flatlaf.FlatDarkLaf;
 import editor.resources.ResourceLoader;
-
 import javax.swing.*;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.JTextComponent;
+import javax.swing.text.Utilities;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.io.*;
 
 public class EditorMain {
 
     private static Popup popup;
+    public static JFrame frame = null;
 
-    public static void Editor(String filename) throws FileNotFoundException {
-        FlatDarkLaf.install();
-        File f = new File(filename);
-        FileInputStream in = null;
+    public static int getRow(int pos, JTextComponent editor) {
+        int rn = (pos==0) ? 1 : 0;
         try {
-            in = new FileInputStream(f);
-        } catch (FileNotFoundException e) {
+            int offs=pos;
+            while( offs>0) {
+                offs= Utilities.getRowStart(editor, offs)-1;
+                rn++;
+            }
+        } catch (BadLocationException e) {
             e.printStackTrace();
         }
+        return rn;
+    }
+
+    public static int getColumn(int pos, JTextComponent editor) {
+        try {
+            return pos-Utilities.getRowStart(editor, pos)+1;
+        } catch (BadLocationException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
+    public static void Editor(String filename) throws FileNotFoundException {
+        File f = new File(filename);
+        try {
+            f.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        FileInputStream in = null;
+        in = new FileInputStream(f);
         byte[] data = new byte[(int) f.length()];
         try {
             in.read(data);
@@ -37,7 +57,7 @@ public class EditorMain {
         fileOutput.replace("\r", "");
 
         Editor editor = new Editor();
-        JFrame frame = new JFrame("DLANG Editor");
+        frame = new JFrame("DLANG Editor");
         frame.setContentPane(editor.getEditorPanel());
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -87,10 +107,9 @@ public class EditorMain {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    String fileName = filename;
                     String toWrite = editor.getEditorText().getText();
 
-                    File f = new File(fileName);
+                    File f = new File(filename);
                     try {
                         f.createNewFile();
                         FileWriter rw = new FileWriter(f);
@@ -99,9 +118,27 @@ public class EditorMain {
                     } catch (IOException ioException) {
                         ioException.printStackTrace();
                     }
-                    Runtime.getRuntime().exec("cmd /c dlang " + filename).waitFor();
-                } catch (IOException | InterruptedException ioException) {
-                    ioException.printStackTrace();
+
+                    Runtime rt = Runtime.getRuntime();
+                    String[] commands = {"cmd", "/c", "dlang", filename + ""};
+                    Process proc = rt.exec(commands);
+
+                    BufferedReader stdInput = new BufferedReader(new
+                            InputStreamReader(proc.getInputStream()));
+
+                    BufferedReader stdError = new BufferedReader(new
+                            InputStreamReader(proc.getErrorStream()));
+
+                    editor.getEditorOutput().setText("");
+
+                    String s = null;
+                    while ((s = stdInput.readLine()) != null) {
+                        editor.getEditorOutput().append(s + "\n");
+                        frame.pack();
+                    }
+
+                } catch (IOException r) {
+                    r.printStackTrace();
                 }
             }
         });

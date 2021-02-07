@@ -1,0 +1,16 @@
+var command = ;
+network tcp host
+#start
+network tcp connect
+print Connected... Preparing.
+var toSend = ;
+system date toSend
+string append toSend Date:[] toSend
+network tcp receive command
+print Recieved command
+print command
+check command DATE 2
+print Sending date
+network tcp send toSend
+network tcp disconnect
+jmp start
