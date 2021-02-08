@@ -1,6 +1,7 @@
 package master;
 
 import com.formdev.flatlaf.FlatDarkLaf;
+import com.formdev.flatlaf.FlatLightLaf;
 import editor.EditorMain;
 import network.NetworkManager;
 import org.jsoup.Jsoup;
@@ -26,14 +27,8 @@ public class Master {
         if(args.length == 0 || args[0].equals("editor")){
             try {
                 EditorMain.Editor(args[1]);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
             } catch (IndexOutOfBoundsException e){
-                try {
-                    EditorMain.Editor(System.getProperty("user.dir") + "/new.dlang");
-                } catch (FileNotFoundException fileNotFoundException) {
-                    fileNotFoundException.printStackTrace();
-                }
+                EditorMain.Editor(System.getProperty("user.dir") + "/new.dlang");
             }
         }else{
             File f = new File(args[0]);
@@ -109,13 +104,14 @@ public class Master {
             }else{
                 Util.CreateVar(name, value, false);
             }
-
+            return new Object[]{0, ""};
         }
         if(line.startsWith("set")){
             String[] varSplit = line.split("=");
             String name = varSplit[0].substring(3).replace(" ", "");
             String value = varSplit[1].substring(1);
             Util.CreateVar(name, value, true);
+            return new Object[]{0, ""};
         }
         if(line.startsWith("print")){
             String toPrint = split[1];
@@ -125,6 +121,7 @@ public class Master {
             int index = Integer.parseInt(Util.GetVar(split[1]));
             String variable = split[2];
             Util.CreateVar(variable, commandArgs.get(index), true);
+            return new Object[]{0, ""};
         }
         if(line.startsWith("maths") || line.startsWith("math")){
             String operation = split[1];
@@ -151,6 +148,7 @@ public class Master {
             }else{
                 Util.CreateVar(outputVar, output + "", true);
             }
+            return new Object[]{0, ""};
         }
         if(line.startsWith("wait")){
             try {
@@ -158,6 +156,7 @@ public class Master {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+            return new Object[]{0, ""};
         }
         if(line.startsWith("loop")){
             String timesString = split[1];
@@ -191,6 +190,7 @@ public class Master {
                 String string2 = Util.GetVar(split[5]);
                 Util.CreateVar(varToWrite, string1.replace(replace, string2), true);
             }
+            return new Object[]{0, ""};
         }
         if(line.startsWith("check")){
             String con1 = split[1];
@@ -238,6 +238,7 @@ public class Master {
                 String fileName = Util.GetVar(split[2]);
                 new File(fileName).delete();
             }
+            return new Object[]{0, ""};
         }
         if(line.startsWith("system")){
             String param1 = split[1];
@@ -267,6 +268,7 @@ public class Master {
                 String var = split[2];
                 Util.CreateVar(var, Calendar.getInstance().getTime().toString(), true);
             }
+            return new Object[]{0, ""};
         }
         if(line.startsWith("network")){
             String param1 = split[1];
@@ -302,6 +304,7 @@ public class Master {
                     NetworkManager.Disconnect();
                 }
             }
+            return new Object[]{0, ""};
         }
         return new Object[]{0, ""};
     }

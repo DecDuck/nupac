@@ -5,8 +5,8 @@ import javax.swing.*;
 public class Editor {
     private JPanel editorPanel;
     private JToolBar editorToolbar;
-    private JTextPane editorText;
     private JTextArea editorOutput;
+    private JTextArea editorText;
     private JScrollPane editorScrollPlane;
 
     public JTextArea getEditorOutput() {
@@ -21,7 +21,7 @@ public class Editor {
         return editorToolbar;
     }
 
-    public JTextPane getEditorText() {
+    public JTextArea getEditorText() {
         return editorText;
     }
 }
