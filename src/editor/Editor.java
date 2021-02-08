@@ -7,6 +7,7 @@ public class Editor {
     private JToolBar editorToolbar;
     private JTextPane editorText;
     private JTextArea editorOutput;
+    private JScrollPane editorScrollPlane;
 
     public JTextArea getEditorOutput() {
         return editorOutput;

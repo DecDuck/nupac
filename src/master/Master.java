@@ -86,14 +86,18 @@ public class Master {
         tray.remove(trayIcon);
     }
 
-    public static int RunLine(String line, int count) throws IOException {
+    public static int RunLine(String line, int count) throws  IOException{
+        return (int)RunLine(line, count, false)[0];
+    }
+
+    public static Object[] RunLine(String line, int count, boolean returnI) throws IOException {
         String[] split = line.split(" ");
         if(line.startsWith("#")){
             jumpLocs.put(line.substring(1), count);
         }
         if(line.startsWith("jmp") || line.startsWith("jump")){
             if(jumpLocs.containsKey(split[1])){
-                return (int) jumpLocs.get(split[1]) - count;
+                return new Object[]{jumpLocs.get(split[1]) - count, ""};
             }
         }
         if(line.startsWith("var")){
@@ -115,7 +119,7 @@ public class Master {
         }
         if(line.startsWith("print")){
             String toPrint = split[1];
-            System.out.println(Util.GetVar(toPrint).replace(";", ""));
+            return new Object[]{0, Util.GetVar(toPrint).replace(";", "")};
         }
         if(line.startsWith("args")){
             int index = Integer.parseInt(Util.GetVar(split[1]));
@@ -167,7 +171,7 @@ public class Master {
                     u += RunLine(file[u].replace("\r", ""), u);
                 }
             }
-            return numOfLines;
+            return new Object[]{numOfLines, ""};
         }
         if(line.startsWith("string")){
             String operation = split[1];
@@ -203,7 +207,7 @@ public class Master {
                     RunLine(file[u].replace("\r", ""), u);
                 }
             }
-            return numOfLines;
+            return new Object[]{numOfLines, ""};
         }
         if(line.startsWith("file")){
 
@@ -299,7 +303,7 @@ public class Master {
                 }
             }
         }
-        return 0;
+        return new Object[]{0, ""};
     }
 
 }

@@ -9,6 +9,8 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 
+import static master.Master.RunLine;
+
 public class EditorMain {
 
     private static Popup popup;
@@ -72,10 +74,10 @@ public class EditorMain {
 
         Icon saveIcon = new ImageIcon(new ImageIcon(ResourceLoader.class.getResource("save.png")).getImage()
                 .getScaledInstance(16, 16,
-                        Image.SCALE_FAST));
+                        Image.SCALE_SMOOTH));
         Icon runIcon = new ImageIcon(new ImageIcon(ResourceLoader.class.getResource("run.png")).getImage()
                 .getScaledInstance(16, 16,
-                        Image.SCALE_FAST));
+                        Image.SCALE_SMOOTH));
         JButton saveButton = new JButton(saveIcon);
         saveButton.setToolTipText("Save");
         saveButton.setPreferredSize(new Dimension(16, 16));
@@ -106,18 +108,19 @@ public class EditorMain {
         runButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                try {
-                    String toWrite = editor.getEditorText().getText();
+                String toWrite = editor.getEditorText().getText();
 
-                    File f = new File(filename);
-                    try {
-                        f.createNewFile();
-                        FileWriter rw = new FileWriter(f);
-                        rw.write(toWrite);
-                        rw.close();
-                    } catch (IOException ioException) {
-                        ioException.printStackTrace();
-                    }
+                File f = new File(filename);
+                try {
+                    f.createNewFile();
+                    FileWriter rw = new FileWriter(f);
+                    rw.write(toWrite);
+                    rw.close();
+                } catch (IOException ioException) {
+                    ioException.printStackTrace();
+                }
+
+                    /*
 
                     Runtime rt = Runtime.getRuntime();
                     String[] commands = {"cmd", "/c", "dlang", filename + ""};
@@ -137,9 +140,25 @@ public class EditorMain {
                         frame.pack();
                     }
 
-                } catch (IOException r) {
-                    r.printStackTrace();
+                     */
+
+                String[] file = editor.getEditorText().getText().split("\n");
+
+                editor.getEditorText().setText("");
+
+                for(int i = 0; i < file.length; i++){
+                    try {
+                        Object[] ob = RunLine(file[i].replace("\r", ""), i, false);
+                        i += (int) ob[0];
+                        if(!ob[1].equals("")){
+                            editor.getEditorOutput().append(ob[1] + "\n");
+                        }
+                        frame.pack();
+                    } catch (IOException z) {
+                        z.printStackTrace();
+                    }
                 }
+
             }
         });
 

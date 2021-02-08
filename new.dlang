@@ -1,7 +1,3 @@
-var out = ;
-network tcp client
-network tcp connect 127.0.0.1
-network tcp send DATE
-network tcp receive out
-print out
-network tcp disconnect
+print 100
+wait 1000
+print 200
