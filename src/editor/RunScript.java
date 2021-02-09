@@ -28,7 +28,6 @@ public class RunScript implements Runnable {
             try {
                 Object[] ob = RunLine(file[i].replace("\r", ""), i, false);
                 i += (int) ob[0];
-                System.out.println(i + ":" + ob[0] + "," + ob[1] + "|");
                 if(((String)ob[1]).length() > 0){
                     result = result + ob[1] + "\n";
                 }
