@@ -1,4 +1,4 @@
-# dlang
+# nupac
 A simple utility language written in Java
 
 ## How to download
