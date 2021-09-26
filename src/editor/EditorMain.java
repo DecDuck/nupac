@@ -2,14 +2,8 @@ package editor;
 
 import editor.autocomplete.AutoSuggestor;
 import editor.resources.ResourceLoader;
-import master.Master;
-import org.fife.ui.autocomplete.*;
-import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 
 import javax.swing.*;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.JTextComponent;
-import javax.swing.text.Utilities;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
@@ -23,7 +17,6 @@ public class EditorMain {
     public static JFrame frame = null;
     public static Editor editor;
     private static JTextArea textArea;
-    public static AutoSuggestor autoSuggestor;
 
     public static void Editor(String filename){
         SwingUtilities.invokeLater(new Runnable() {
@@ -52,7 +45,7 @@ public class EditorMain {
                 fileOutput.replace("\r", "");
 
                 editor = new Editor();
-                frame = new JFrame("DLANG Editor");
+                frame = new JFrame("Nupac Editor");
                 frame.setContentPane(editor.getEditorPanel());
                 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -93,7 +86,11 @@ public class EditorMain {
                     words.add("disconnect");
                 }
 
-                autoSuggestor = new AutoSuggestor(textArea, frame, words, Color.WHITE.brighter(), Color.BLACK.darker(), Color.BLACK.brighter(), 0.75f);
+                Autocomplete autoComplete = new Autocomplete(textArea, words);
+                textArea.getDocument().addDocumentListener(autoComplete);
+
+                textArea.getInputMap().put(KeyStroke.getKeyStroke("TAB"), "commit");
+                textArea.getActionMap().put("commit", autoComplete.new CommitAction());
 
                 Icon saveIcon = new ImageIcon(new ImageIcon(ResourceLoader.class.getResource("save.png")).getImage()
                         .getScaledInstance(16, 16,
@@ -107,18 +104,6 @@ public class EditorMain {
                 JButton runButton = new JButton(runIcon);
                 runButton.setToolTipText("Run");
                 runButton.setPreferredSize(new Dimension(16, 16));
-
-                textArea.setText(fileOutput);
-                textArea.addKeyListener(new KeyAdapter(){
-                    @Override
-                    public void keyTyped(KeyEvent e) {
-                        if(e.getKeyCode() == KeyEvent.VK_TAB){
-                            e.consume();
-                        }else{
-                            super.keyTyped(e);
-                        }
-                    }
-                });
 
                 saveButton.addActionListener(new ActionListener() {
                     @Override

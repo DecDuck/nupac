@@ -8,6 +8,7 @@ import org.jsoup.Jsoup;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.*;
 import java.util.List;
@@ -65,16 +66,11 @@ public class Master {
         //Obtain only one instance of the SystemTray object
         SystemTray tray = SystemTray.getSystemTray();
 
-        //If the icon is a file
-        //Image image = Toolkit.getDefaultToolkit().createImage("icon.png");
-        //Alternative (if the icon is on the classpath):
-        Image image = Toolkit.getDefaultToolkit().createImage(Master.class.getResource("master/logo.png"));
-
-        TrayIcon trayIcon = new TrayIcon(image, "DLANG");
+        TrayIcon trayIcon = new TrayIcon(new BufferedImage(10, 10, BufferedImage.TYPE_INT_RGB), "DLANG");
         //Let the system resize the image if needed
         trayIcon.setImageAutoSize(true);
         //Set tooltip text for the tray icon
-        trayIcon.setToolTip("Dlang Tray Icon");
+        trayIcon.setToolTip("nupac");
         tray.add(trayIcon);
 
         trayIcon.displayMessage(caption, message, TrayIcon.MessageType.INFO);
@@ -89,12 +85,12 @@ public class Master {
         String[] split = line.split(" ");
         if(line.startsWith("#")){
             jumpLocs.put(line.substring(1), count);
-        }
+        } else
         if(line.startsWith("jmp") || line.startsWith("jump")){
             if(jumpLocs.containsKey(split[1])){
                 return new Object[]{jumpLocs.get(split[1]) - count, ""};
             }
-        }
+        } else
         if(line.startsWith("var")){
             String[] varSplit = line.split("=");
             String name = varSplit[0].substring(3).replace(" ", "");
@@ -105,18 +101,18 @@ public class Master {
                 Util.CreateVar(name, value, false);
             }
             return new Object[]{0, ""};
-        }
+        } else
         if(line.startsWith("set")){
             String[] varSplit = line.split("=");
             String name = varSplit[0].substring(3).replace(" ", "");
             String value = varSplit[1].substring(1);
             Util.CreateVar(name, value, true);
             return new Object[]{0, ""};
-        }
+        } else
         if(line.startsWith("print")){
             String toPrint = split[1];
             return new Object[]{0, Util.GetVar(toPrint).replace(";", "")};
-        }
+        } else
         if(line.startsWith("args")){
             int index = Integer.parseInt(Util.GetVar(split[1]));
             String variable = split[2];
@@ -149,7 +145,7 @@ public class Master {
                 Util.CreateVar(outputVar, output + "", true);
             }
             return new Object[]{0, ""};
-        }
+        } else
         if(line.startsWith("wait")){
             try {
                 Thread.sleep(Integer.parseInt(split[1]));
@@ -157,7 +153,7 @@ public class Master {
                 e.printStackTrace();
             }
             return new Object[]{0, ""};
-        }
+        } else
         if(line.startsWith("loop")){
             String timesString = split[1];
             timesString = Util.GetVar(timesString);
@@ -171,7 +167,7 @@ public class Master {
                 }
             }
             return new Object[]{numOfLines, ""};
-        }
+        } else
         if(line.startsWith("string")){
             String operation = split[1];
 
@@ -191,7 +187,7 @@ public class Master {
                 Util.CreateVar(varToWrite, string1.replace(replace, string2), true);
             }
             return new Object[]{0, ""};
-        }
+        } else
         if(line.startsWith("check")){
             String con1 = split[1];
             String con2 = split[2];
@@ -208,7 +204,7 @@ public class Master {
                 }
             }
             return new Object[]{numOfLines, ""};
-        }
+        } else
         if(line.startsWith("file")){
 
             String para1 = split[1];
@@ -239,7 +235,7 @@ public class Master {
                 new File(fileName).delete();
             }
             return new Object[]{0, ""};
-        }
+        } else
         if(line.startsWith("system")){
             String param1 = split[1];
             if(param1.startsWith("batch")){
@@ -269,7 +265,7 @@ public class Master {
                 Util.CreateVar(var, Calendar.getInstance().getTime().toString(), true);
             }
             return new Object[]{0, ""};
-        }
+        } else
         if(line.startsWith("network")){
             String param1 = split[1];
             if(param1.startsWith("html")){
@@ -306,7 +302,10 @@ public class Master {
             }
             return new Object[]{0, ""};
         }
-        return new Object[]{0, ""};
+        else
+        {
+            return new Object[]{0, "Command not recognised"};
+        }
     }
 
 }

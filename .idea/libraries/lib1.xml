@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="lib1">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/out/production/dlang/lib/autocomplete-3.1.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/out/production/dlang/lib/rsyntaxtextarea-3.1.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/out/production/dlang/lib/flatlaf-0.46.jar!/" />
+      <root url="jar://$PROJECT_DIR$/out/production/dlang/lib/jsoup-1.13.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

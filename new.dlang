@@ -1,5 +1,2 @@
-var x = ;
-print 100
-math * 100 200 x
-print 400
-print x
+system notify TITLE PRINT
+wait 10

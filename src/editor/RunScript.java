@@ -15,7 +15,7 @@ public class RunScript implements Runnable {
     public String result = "";
 
     public RunScript(String textArea){
-        t = new Thread(this, "DLANG RUN");
+        t = new Thread(this, "nupac");
         this.textArea = textArea;
     }
 
