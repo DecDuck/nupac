@@ -52,13 +52,36 @@ public class Master {
 
             file = fileOutput.split("\n");
 
-            for(int i = 0; i < file.length; i++){
-                try {
-                    i += RunLine(file[i].replace("\r", ""), i);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+            Run(file);
+        }
+    }
+
+    public static void Run(String[] file){
+        for(int i = 0; i < file.length; i++){
+            if(file[i].startsWith("#")){
+                jumpLocs.put(file[i].substring(1), i);
             }
+        }
+
+        int i = 0;
+
+        while(true){
+
+            if(i >= file.length){
+                return;
+            }
+
+            Object[] b = RunLine(file[i].replace("\r", ""), i);
+
+
+            System.out.println(b[1]);
+
+            if((int)b[0] != 0){
+                i = (int) b[0];
+            }else{
+                i++;
+            }
+
         }
     }
 
@@ -77,20 +100,16 @@ public class Master {
         tray.remove(trayIcon);
     }
 
-    public static int RunLine(String line, int count) throws  IOException{
-        return (int)RunLine(line, count, false)[0];
-    }
-
-    public static Object[] RunLine(String line, int count, boolean returnI) throws IOException {
+    public static Object[] RunLine(String line, int location) {
         String[] split = line.split(" ");
-        if(line.startsWith("#")){
-            jumpLocs.put(line.substring(1), count);
-        } else
+        if(line == ""){
+            return new Object[]{0, ""};
+        }
         if(line.startsWith("jmp") || line.startsWith("jump")){
             if(jumpLocs.containsKey(split[1])){
-                return new Object[]{jumpLocs.get(split[1]) - count, ""};
+                return new Object[]{jumpLocs.get(split[1]), ""};
             }
-        } else
+        }
         if(line.startsWith("var")){
             String[] varSplit = line.split("=");
             String name = varSplit[0].substring(3).replace(" ", "");
@@ -101,18 +120,18 @@ public class Master {
                 Util.CreateVar(name, value, false);
             }
             return new Object[]{0, ""};
-        } else
+        }
         if(line.startsWith("set")){
             String[] varSplit = line.split("=");
             String name = varSplit[0].substring(3).replace(" ", "");
             String value = varSplit[1].substring(1);
             Util.CreateVar(name, value, true);
             return new Object[]{0, ""};
-        } else
+        }
         if(line.startsWith("print")){
             String toPrint = split[1];
             return new Object[]{0, Util.GetVar(toPrint).replace(";", "")};
-        } else
+        }
         if(line.startsWith("args")){
             int index = Integer.parseInt(Util.GetVar(split[1]));
             String variable = split[2];
@@ -145,7 +164,7 @@ public class Master {
                 Util.CreateVar(outputVar, output + "", true);
             }
             return new Object[]{0, ""};
-        } else
+        }
         if(line.startsWith("wait")){
             try {
                 Thread.sleep(Integer.parseInt(split[1]));
@@ -153,21 +172,21 @@ public class Master {
                 e.printStackTrace();
             }
             return new Object[]{0, ""};
-        } else
+        }
         if(line.startsWith("loop")){
             String timesString = split[1];
             timesString = Util.GetVar(timesString);
             String loopLines = split[2];
 
-            int loopCount = count + 1;
+            int loopCount = location + 1;
             int numOfLines = Integer.parseInt(loopLines);
             for(int i = 0; i < Integer.parseInt(timesString); i++){
                 for(int u = loopCount; u < numOfLines + loopCount; u++){
-                    u += RunLine(file[u].replace("\r", ""), u);
+                    RunLine(file[u].replace("\r", ""), u);
                 }
             }
             return new Object[]{numOfLines, ""};
-        } else
+        }
         if(line.startsWith("string")){
             String operation = split[1];
 
@@ -187,7 +206,7 @@ public class Master {
                 Util.CreateVar(varToWrite, string1.replace(replace, string2), true);
             }
             return new Object[]{0, ""};
-        } else
+        }
         if(line.startsWith("check")){
             String con1 = split[1];
             String con2 = split[2];
@@ -198,51 +217,55 @@ public class Master {
 
             int numOfLines = Integer.parseInt(loopLines);
             if(con1.equals(con2)){
-                int loopCount = count + 1;
+                int loopCount = location + 1;
                 for(int u = loopCount; u < numOfLines + loopCount; u++){
                     RunLine(file[u].replace("\r", ""), u);
                 }
             }
             return new Object[]{numOfLines, ""};
-        } else
+        }
         if(line.startsWith("file")){
+            try{
+                String para1 = split[1];
+                if(para1.startsWith("write")){
+                    String fileName = Util.GetVar(split[2]);
+                    String toWrite = Util.GetVar(split[3]);
 
-            String para1 = split[1];
-            if(para1.startsWith("write")){
-                String fileName = Util.GetVar(split[2]);
-                String toWrite = Util.GetVar(split[3]);
+                    File f = new File(fileName);
+                    f.createNewFile();
+                    FileWriter rw = new FileWriter(f);
+                    rw.write(toWrite.replace(";;", "\n"));
+                    rw.close();
+                }
+                if(para1.startsWith("read")){
+                    String fileName = Util.GetVar(split[2]);
+                    String varToRead = split[3];
 
-                File f = new File(fileName);
-                f.createNewFile();
-                FileWriter rw = new FileWriter(f);
-                rw.write(toWrite.replace(";;", "\n"));
-                rw.close();
+                    File f = new File(fileName);
+                    FileInputStream in = new FileInputStream(f);
+                    byte[] data = new byte[(int) f.length()];
+                    in.read(data);
+                    in.close();
+                    String result = new String(data);
+                    Util.CreateVar(varToRead, result, true);
+                }
+                if(para1.startsWith("delete")){
+                    String fileName = Util.GetVar(split[2]);
+                    new File(fileName).delete();
+                }
+            }catch(IOException e){
+                e.printStackTrace();
             }
-            if(para1.startsWith("read")){
-                String fileName = Util.GetVar(split[2]);
-                String varToRead = split[3];
 
-                File f = new File(fileName);
-                FileInputStream in = new FileInputStream(f);
-                byte[] data = new byte[(int) f.length()];
-                in.read(data);
-                in.close();
-                String result = new String(data);
-                Util.CreateVar(varToRead, result, true);
-            }
-            if(para1.startsWith("delete")){
-                String fileName = Util.GetVar(split[2]);
-                new File(fileName).delete();
-            }
             return new Object[]{0, ""};
-        } else
+        }
         if(line.startsWith("system")){
             String param1 = split[1];
             if(param1.startsWith("batch")){
                 String fileName = Util.GetVar(split[2]);
                 try {
                     Runtime.getRuntime().exec("cmd /c " + fileName).waitFor();
-                } catch (InterruptedException e) {
+                } catch (InterruptedException | IOException e) {
                     e.printStackTrace();
                 }
             }
@@ -265,13 +288,18 @@ public class Master {
                 Util.CreateVar(var, Calendar.getInstance().getTime().toString(), true);
             }
             return new Object[]{0, ""};
-        } else
+        }
         if(line.startsWith("network")){
             String param1 = split[1];
             if(param1.startsWith("html")){
                 String url = Util.GetVar(split[2]);
                 String variable = split[3];
-                String html = Jsoup.connect(url).get().html();
+                String html = null;
+                try {
+                    html = Jsoup.connect(url).get().html();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 Util.CreateVar(variable, html, true);
             }
             if(param1.startsWith("tcp")){
@@ -301,10 +329,6 @@ public class Master {
                 }
             }
             return new Object[]{0, ""};
-        }
-        else
-        {
-            return new Object[]{0, "Command not recognised"};
         }
     }
 

@@ -1,2 +1,12 @@
-system notify TITLE PRINT
-wait 10
+var google = https://www.google.com
+var googleHTML = ;
+
+jump main
+
+#get_site
+network html google googleHTML
+jump main
+
+#main
+jump get_site
+print googleHTML

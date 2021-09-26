@@ -3,7 +3,9 @@ package editor;
 import master.Master;
 
 import javax.swing.*;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 
 import static master.Master.RunLine;
 
@@ -24,17 +26,7 @@ public class RunScript implements Runnable {
         String[] file = textArea.split("\n");
         Master.file = file;
 
-        for(int i = 0; i < file.length; i++){
-            try {
-                Object[] ob = RunLine(file[i].replace("\r", ""), i, false);
-                i += (int) ob[0];
-                if(((String)ob[1]).length() > 0){
-                    result = result + ob[1] + "\n";
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        Master.Run(file);
 
         SwingUtilities.invokeLater(new Runnable(){
             @Override
